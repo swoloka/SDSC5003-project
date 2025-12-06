@@ -6,60 +6,60 @@
           :class="{ active: !isRegistering }"
           @click="isRegistering = false"
         >
-          登录
+          Login
         </button>
         <button
           :class="{ active: isRegistering }"
           @click="isRegistering = true"
         >
-          注册
+          Register
         </button>
       </div>
 
       <!-- 登录表单 -->
       <form v-if="!isRegistering" @submit.prevent="handleLogin" class="auth-form">
-        <h1>用户登录</h1>
+        <h1>User Login</h1>
         <div class="input-group">
-          <label for="username">用户名</label>
+          <label for="username">Username</label>
           <input type="text" id="username" v-model="username" required>
         </div>
         <div class="input-group">
-          <label for="password">密码</label>
+          <label for="password">Password</label>
           <input type="password" id="password" v-model="password" required>
         </div>
-        <button type="submit">登录</button>
+        <button type="submit">Login</button>
         <p v-if="error" class="error-message">{{ error }}</p>
       </form>
 
       <!-- 注册表单 -->
       <form v-else @submit.prevent="handleRegister" class="auth-form">
-        <h1>用户注册</h1>
+        <h1>User Registration</h1>
         <div class="input-group">
-          <label for="reg-username">用户名</label>
+          <label for="reg-username">Username</label>
           <input type="text" id="reg-username" v-model="regForm.username" required>
         </div>
         <div class="input-group">
-          <label for="reg-password">密码</label>
+          <label for="reg-password">Password</label>
           <input type="password" id="reg-password" v-model="regForm.password" required>
         </div>
         <div class="input-group">
-          <label for="reg-confirm-password">确认密码</label>
+          <label for="reg-confirm-password">Confirm Password</label>
           <input type="password" id="reg-confirm-password" v-model="regForm.confirmPassword" required>
         </div>
         <div class="input-group">
-          <label for="reg-contact">联系方式</label>
+          <label for="reg-contact">Contact</label>
           <input type="text" id="reg-contact" v-model="regForm.contact" required>
         </div>
         <div class="input-group">
-          <label for="reg-district">地区</label>
+          <label for="reg-district">District</label>
           <select id="reg-district" v-model="regForm.district" required>
-            <option value="">请选择地区</option>
+            <option value="">Please Select District</option>
             <option v-for="district in hongKongDistricts" :key="district" :value="district">
-              {{ district }}
+              {{ getDistrictLabel(district) }}
             </option>
           </select>
         </div>
-        <button type="submit">注册</button>
+        <button type="submit">Register</button>
         <p v-if="error" class="error-message">{{ error }}</p>
         <p v-if="success" class="success-message">{{ success }}</p>
       </form>
@@ -111,6 +111,33 @@ const hongKongDistricts = [
   '葵青区',
   '离岛区'
 ]
+
+// 地区中英文映射
+const districtMapping = {
+  '中西区': 'Central and Western',
+  '湾仔区': 'Wan Chai',
+  '东区': 'Eastern',
+  '南区': 'Southern',
+  '油尖旺区': 'Yau Tsim Mong',
+  '深水埗区': 'Sham Shui Po',
+  '九龙城区': 'Kowloon City',
+  '黄大仙区': 'Wong Tai Sin',
+  '观塘区': 'Kwun Tong',
+  '荃湾区': 'Tsuen Wan',
+  '屯门区': 'Tuen Mun',
+  '元朗区': 'Yuen Long',
+  '北区': 'North',
+  '大埔区': 'Tai Po',
+  '西贡区': 'Sai Kung',
+  '沙田区': 'Sha Tin',
+  '葵青区': 'Kwai Tsing',
+  '离岛区': 'Islands'
+}
+
+// 获取地区的英文显示标签
+const getDistrictLabel = (chineseDistrict) => {
+  return districtMapping[chineseDistrict] || chineseDistrict
+}
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -170,7 +197,7 @@ const handleLogin = async () => {
       error.value = response.message
     }
   } catch (err) {
-    error.value = '登录失败，请检查网络或服务器。'
+    error.value = 'Login failed, please check network or server.'
     console.error(err)
   }
 }
@@ -182,7 +209,7 @@ const handleRegister = async () => {
 
   // 验证密码
   if (regForm.value.password !== regForm.value.confirmPassword) {
-    error.value = '两次输入的密码不一致'
+    error.value = 'Passwords do not match'
     return
   }
 
@@ -195,7 +222,7 @@ const handleRegister = async () => {
     })
 
     if (response.success) {
-      success.value = '注册成功！请登录'
+      success.value = 'Registration successful! Please login'
 
       // 保存注册信息到localStorage，以便登录时使用
       localStorage.setItem('pending_username', regForm.value.username)
@@ -219,7 +246,7 @@ const handleRegister = async () => {
       error.value = response.message
     }
   } catch (err) {
-    error.value = '注册失败，请检查网络或服务器。'
+    error.value = 'Registration failed, please check network or server.'
     console.error(err)
   }
 }

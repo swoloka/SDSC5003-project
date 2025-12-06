@@ -1,8 +1,8 @@
 // 档案相关的API服务
 
 // 宠物档案相关
-export async function getUserPetProfiles(token) {
-  const response = await fetch('http://localhost:8080/api/pet-profiles', {
+export async function getUserPetProfiles(token, username) {
+  const response = await fetch(`http://localhost:8080/api/pet-profiles/user/${username}`, {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -98,8 +98,8 @@ export async function deletePetProfile(profileId, token) {
 }
 
 // 服务档案相关
-export async function getUserServiceProfiles(token) {
-  const response = await fetch('http://localhost:8080/api/service-profiles', {
+export async function getUserServiceProfiles(token, username) {
+  const response = await fetch(`http://localhost:8080/api/service-profiles/user/${username}`, {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${token}`,

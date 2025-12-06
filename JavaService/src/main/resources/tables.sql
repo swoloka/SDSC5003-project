@@ -56,7 +56,9 @@ CREATE TABLE posts (
                        district VARCHAR(100) COMMENT '地区',
                        contact VARCHAR(100) COMMENT '联系方式',
 
+                       service_time DATETIME COMMENT '服务时间',
                        create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '发布时间',
+                       status VARCHAR(50) COMMENT '状态',
                        PRIMARY KEY (post_id),
                        CONSTRAINT fk_post_user FOREIGN KEY (username) REFERENCES users(username)
                            ON DELETE CASCADE ON UPDATE CASCADE

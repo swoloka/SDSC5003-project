@@ -63,10 +63,7 @@
               <option value="">Please Select</option>
               <option value="grooming">Pet Grooming</option>
               <option value="walking">Pet Walking</option>
-              <option value="sitting">Pet Sitting</option>
-              <option value="training">Pet Training</option>
-              <option value="boarding">Pet Boarding</option>
-              <option value="medical">Pet Medical Care</option>
+              <option value="feeding">Pet Feeding</option>
               <option value="other">Other Services</option>
             </select>
           </div>
@@ -120,7 +117,7 @@ const formData = ref({
 const loadProfiles = async () => {
   loading.value = true
   try {
-    const response = await getUserServiceProfiles(authStore.token)
+    const response = await getUserServiceProfiles(authStore.token, authStore.user?.username)
     if (response.success) {
       serviceProfiles.value = response.profiles || []
     }

@@ -40,4 +40,33 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
     @Query("SELECT p FROM Post p WHERE p.username = :username AND p.title = :title")
     List<Post> findByUsernameAndTitle(@Param("username") String username, @Param("title") String title);
+
+    List<Post> findByStatus(String status);
+
+    List<Post> findByUsernameAndStatus(String username, String status);
+
+    @Query("SELECT p FROM Post p WHERE p.role = :role AND p.status = 'open' ORDER BY p.serviceTime ASC")
+    List<Post> findByRoleAndOpenStatus(@Param("role") String role);
+
+    @Query("SELECT p FROM Post p WHERE p.petType = :petType AND p.status = 'open' ORDER BY p.serviceTime ASC")
+    List<Post> findByPetTypeAndOpenStatus(@Param("petType") String petType);
+
+    @Query("SELECT p FROM Post p WHERE p.role = :role AND p.petType = :petType AND p.status = 'open' ORDER BY p.serviceTime ASC")
+    List<Post> findByRoleAndPetTypeAndOpenStatus(@Param("role") String role, @Param("petType") String petType);
+
+    @Query("SELECT p FROM Post p WHERE p.status = 'open' ORDER BY p.serviceTime ASC")
+    List<Post> findByOpenStatus();
+
+    @Query("SELECT p FROM Post p WHERE p.status = 'open' AND " +
+           "(:type IS NULL OR p.role = :type) AND " +
+           "(:petType IS NULL OR p.petType = :petType) AND " +
+           "(:serviceType IS NULL OR p.serviceType = :serviceType) AND " +
+           "(:district IS NULL OR p.district = :district) " +
+           "ORDER BY p.serviceTime ASC")
+    List<Post> findOpenPostsByFilters(
+        @Param("type") String type,
+        @Param("petType") String petType,
+        @Param("serviceType") String serviceType,
+        @Param("district") String district
+    );
 }

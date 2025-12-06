@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -25,6 +26,22 @@ public class PostController {
     @GetMapping
     public ResponseEntity<List<Post>> getAllPosts() {
         List<Post> posts = postService.findAll();
+        return ResponseEntity.ok(posts);
+    }
+
+    @GetMapping("/open")
+    public ResponseEntity<List<Post>> getAllOpenPosts() {
+        List<Post> posts = postService.findByOpenStatus();
+        return ResponseEntity.ok(posts);
+    }
+
+    @GetMapping("/open/search")
+    public ResponseEntity<List<Post>> searchOpenPosts(
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) String petType,
+            @RequestParam(required = false) String serviceType,
+            @RequestParam(required = false) String district) {
+        List<Post> posts = postService.findOpenPostsByFilters(type, petType, serviceType, district);
         return ResponseEntity.ok(posts);
     }
 
@@ -53,9 +70,27 @@ public class PostController {
         return ResponseEntity.ok(posts);
     }
 
+    @GetMapping("/role/{role}/open")
+    public ResponseEntity<List<Post>> getOpenPostsByRole(@PathVariable String role) {
+        List<Post> posts = postService.findByRoleAndOpenStatus(role);
+        return ResponseEntity.ok(posts);
+    }
+
     @GetMapping("/pet-type/{petType}")
     public ResponseEntity<List<Post>> getPostsByPetType(@PathVariable String petType) {
         List<Post> posts = postService.findByPetType(petType);
+        return ResponseEntity.ok(posts);
+    }
+
+    @GetMapping("/pet-type/{petType}/open")
+    public ResponseEntity<List<Post>> getOpenPostsByPetType(@PathVariable String petType) {
+        List<Post> posts = postService.findByPetTypeAndOpenStatus(petType);
+        return ResponseEntity.ok(posts);
+    }
+
+    @GetMapping("/role/{role}/pet-type/{petType}/open")
+    public ResponseEntity<List<Post>> getOpenPostsByRoleAndPetType(@PathVariable String role, @PathVariable String petType) {
+        List<Post> posts = postService.findByRoleAndPetTypeAndOpenStatus(role, petType);
         return ResponseEntity.ok(posts);
     }
 
@@ -109,6 +144,14 @@ public class PostController {
     @PutMapping("/{id}")
     public ResponseEntity<Post> updatePost(@PathVariable Integer id, @RequestBody Post post) {
         Optional<Post> updatedPost = postService.update(id, post);
+        return updatedPost.map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{id}/status")
+    public ResponseEntity<Post> updatePostStatus(@PathVariable Integer id, @RequestBody Map<String, String> statusMap) {
+        String status = statusMap.get("status");
+        Optional<Post> updatedPost = postService.updateStatus(id, status);
         return updatedPost.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

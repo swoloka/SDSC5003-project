@@ -32,59 +32,113 @@
 
       <!-- 筛选器区域 -->
       <div class="filter-section">
-        <!-- 帖子类型筛选 -->
-        <div class="filter-group">
-          <h3>Post Type</h3>
-          <div class="post-tabs">
-            <button
-              :class="{ active: activeTab === 'all' }"
-              @click="activeTab = 'all'"
-            >
-              All Posts
-            </button>
-            <button
-              :class="{ active: activeTab === 'seeking' }"
-              @click="activeTab = 'seeking'"
-            >
-              Seeking Service
-            </button>
-            <button
-              :class="{ active: activeTab === 'offering' }"
-              @click="activeTab = 'offering'"
-            >
-              Offering Service
-            </button>
+        <!-- 第一行 -->
+        <div class="filter-row">
+          <!-- 帖子类型筛选 -->
+          <div class="filter-group">
+            <h3>Post Type</h3>
+            <div class="post-tabs">
+              <button
+                :class="{ active: activeTab === 'all' }"
+                @click="activeTab = 'all'"
+              >
+                All Posts
+              </button>
+              <button
+                :class="{ active: activeTab === 'seeking' }"
+                @click="activeTab = 'seeking'"
+              >
+                Looking for Service
+              </button>
+              <button
+                :class="{ active: activeTab === 'offering' }"
+                @click="activeTab = 'offering'"
+              >
+                Offering Service
+              </button>
+            </div>
+          </div>
+
+          <!-- Pet Type Filter -->
+          <div class="filter-group">
+            <h3>Pet Type</h3>
+            <div class="pet-type-filters">
+              <button
+                :class="{ active: selectedPetType === 'all' }"
+                @click="selectedPetType = 'all'"
+              >
+                All Pets
+              </button>
+              <button
+                :class="{ active: selectedPetType === 'cat' }"
+                @click="selectedPetType = 'cat'"
+              >
+                🐱 Cats
+              </button>
+              <button
+                :class="{ active: selectedPetType === 'dog' }"
+                @click="selectedPetType = 'dog'"
+              >
+                🐶 Dogs
+              </button>
+              <button
+                :class="{ active: selectedPetType === 'other' }"
+                @click="selectedPetType = 'other'"
+              >
+                🐾 Others
+              </button>
+            </div>
           </div>
         </div>
 
-        <!-- 宠物类型筛选 -->
-        <div class="filter-group">
-          <h3>Pet Type</h3>
-          <div class="pet-type-filters">
-            <button
-              :class="{ active: selectedPetType === 'all' }"
-              @click="selectedPetType = 'all'"
-            >
-              All Pets
-            </button>
-            <button
-              :class="{ active: selectedPetType === 'cat' }"
-              @click="selectedPetType = 'cat'"
-            >
-              🐱 Cats
-            </button>
-            <button
-              :class="{ active: selectedPetType === 'dog' }"
-              @click="selectedPetType = 'dog'"
-            >
-              🐶 Dogs
-            </button>
-            <button
-              :class="{ active: selectedPetType === 'other' }"
-              @click="selectedPetType = 'other'"
-            >
-              🐾 Others
-            </button>
+        <!-- 第二行 -->
+        <div class="filter-row">
+          <!-- Service Type Filter -->
+          <div class="filter-group">
+            <h3>Service Type</h3>
+            <div class="service-type-filters">
+              <button
+                :class="{ active: selectedServiceType === 'all' }"
+                @click="selectedServiceType = 'all'"
+              >
+                All Services
+              </button>
+              <button
+                :class="{ active: selectedServiceType === 'grooming' }"
+                @click="selectedServiceType = 'grooming'"
+              >
+                ✂️ Grooming
+              </button>
+              <button
+                :class="{ active: selectedServiceType === 'walking' }"
+                @click="selectedServiceType = 'walking'"
+              >
+                🚶 Walking
+              </button>
+              <button
+                :class="{ active: selectedServiceType === 'feeding' }"
+                @click="selectedServiceType = 'feeding'"
+              >
+                🍽️ Feeding
+              </button>
+              <button
+                :class="{ active: selectedServiceType === 'other' }"
+                @click="selectedServiceType = 'other'"
+              >
+                📦 Other Services
+              </button>
+            </div>
+          </div>
+
+          <!-- District Filter -->
+          <div class="filter-group">
+            <h3>District</h3>
+            <select v-model="selectedDistrict" class="district-select">
+              <option value="all">All Districts</option>
+              <option v-for="district in hongKongDistricts" :key="district" :value="getDistrictValue(district)">
+                {{ getDistrictLabel(district) }}
+              </option>
+            </select>
           </div>
         </div>
       </div>
@@ -101,12 +155,30 @@
           >
             <div class="post-header">
               <span class="post-role" :class="post.role">
-                {{ post.role === 'seeking' ? '寻求服务' : '提供服务' }}
+                {{ post.role === 'seeking' ? 'Looking for Service' : 'Offering Service' }}
               </span>
               <span class="post-time">{{ formatTime(post.createTime) }}</span>
             </div>
             <h3 class="post-title">{{ post.title }}</h3>
             <p class="post-detail">{{ post.description }}</p>
+
+            <!-- Pet Information -->
+            <div v-if="post.role === 'seeking' && (post.petName || post.breed)" class="pet-info">
+              <span v-if="post.petName" class="pet-name">🐾 Pet: {{ post.petName }}</span>
+              <span v-if="post.breed" class="pet-breed">Breed: {{ post.breed }}</span>
+              <span v-if="post.serviceType" class="service-type">⚙️ Service: {{ getServiceTypeLabel(post.serviceType) }}</span>
+            </div>
+
+            <!-- Service Type for offering posts only -->
+            <div v-else-if="post.role === 'offering' && post.serviceType" class="service-info">
+              <span class="service-type">⚙️ Service: {{ getServiceTypeLabel(post.serviceType) }}</span>
+            </div>
+
+            <!-- Service Time -->
+            <div v-if="post.serviceTime" class="service-time">
+              🕐 Service Time: {{ formatServiceTime(post.serviceTime) }}
+            </div>
+
             <div class="post-meta">
               <span class="post-category">{{ getCategoryLabel(post.petType) }}</span>
               <span class="post-price" v-if="post.price">
@@ -136,7 +208,7 @@
             </select>
           </div>
 
-          <!-- 档案选择部分 -->
+          <!-- Profile Selection Section -->
           <div v-if="newPost.role === 'seeking' && petProfiles.length > 0" class="form-group">
             <label>Select Pet Profile (Optional)</label>
             <select v-model="selectedPetProfile" @change="onPetProfileChange">
@@ -162,7 +234,7 @@
             <input type="text" v-model="newPost.title" required>
           </div>
 
-          <!-- 只在寻求服务时显示宠物相关字段 -->
+          <!-- Pet-related fields only shown for service seeking posts -->
           <template v-if="newPost.role === 'seeking'">
             <div class="form-group">
               <label>Pet Name (Optional)</label>
@@ -174,17 +246,14 @@
             </div>
           </template>
 
-          <!-- 只在提供服务时显示服务类型 -->
+          <!-- Service type only shown for service offering posts -->
           <div v-if="newPost.role === 'offering'" class="form-group">
             <label>Service Type</label>
             <select v-model="newPost.serviceType">
               <option value="">Please Select</option>
               <option value="grooming">Pet Grooming</option>
               <option value="walking">Pet Walking</option>
-              <option value="sitting">Pet Sitting</option>
-              <option value="training">Pet Training</option>
-              <option value="boarding">Pet Boarding</option>
-              <option value="medical">Pet Medical Care</option>
+              <option value="feeding">Pet Feeding</option>
               <option value="other">Other Services</option>
             </select>
           </div>
@@ -197,7 +266,7 @@
             <input type="number" v-model="newPost.price" step="0.01">
           </div>
 
-          <!-- 只在寻求服务时显示Category选择，提供服务时从service profile获取 -->
+          <!-- Category selection only shown for service seeking posts, retrieved from service profile for offering posts -->
           <div v-if="newPost.role === 'seeking'" class="form-group">
             <label>Category</label>
             <select v-model="newPost.category" required>
@@ -208,7 +277,19 @@
             </select>
           </div>
 
-          <!-- 服务类型时显示pet_type选择 -->
+          <!-- Service type selection for seeking posts -->
+          <div v-if="newPost.role === 'seeking'" class="form-group">
+            <label>Service Type</label>
+            <select v-model="newPost.serviceType" required>
+              <option value="">Please Select</option>
+              <option value="grooming">Pet Grooming</option>
+              <option value="walking">Pet Walking</option>
+              <option value="feeding">Pet Feeding</option>
+              <option value="other">Other Services</option>
+            </select>
+          </div>
+
+          <!-- Show pet_type selection when service type is selected -->
           <div v-if="newPost.role === 'offering'" class="form-group">
             <label>Pet Type</label>
             <select v-model="newPost.category" required>
@@ -223,9 +304,13 @@
             <select v-model="newPost.district" required>
               <option value="">Please Select District</option>
               <option v-for="district in hongKongDistricts" :key="district" :value="district">
-                {{ district }}
+                {{ getDistrictLabel(district) }}
               </option>
             </select>
+          </div>
+          <div class="form-group">
+            <label>Service Time</label>
+            <input type="datetime-local" v-model="newPost.serviceTime" required>
           </div>
           <div class="form-group">
             <label>Contact</label>
@@ -244,11 +329,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watchEffect } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import {
-  getAllPosts,
+  getOpenPosts,
   getPostsByType,
   createPost
 } from '@/services/postService'
@@ -265,6 +350,8 @@ const posts = ref([])
 const loading = ref(true)
 const activeTab = ref('all')
 const selectedPetType = ref('all')
+const selectedServiceType = ref('all')
+const selectedDistrict = ref('all')
 const showCreatePostModal = ref(false)
 const submitting = ref(false)
 
@@ -279,30 +366,19 @@ const newPost = ref({
   detail: '',
   category: '',
   district: '',
-  contact: ''
+  contact: '',
+  serviceTime: ''
 })
 
-// 用户档案数据
+// User profile data
 const petProfiles = ref([])
 const serviceProfiles = ref([])
 const selectedPetProfile = ref(null)
 const selectedServiceProfile = ref(null)
 
-// 根据帖子��型和宠物类型过滤
+// 帖子数据已经从后端过滤，直接返回
 const filteredPosts = computed(() => {
-  let filtered = posts.value
-
-  // 根据帖子类型过滤
-  if (activeTab.value !== 'all') {
-    filtered = filtered.filter(post => post.role === activeTab.value)
-  }
-
-  // 根据宠物类型过滤
-  if (selectedPetType.value !== 'all') {
-    filtered = filtered.filter(post => post.petType === selectedPetType.value)
-  }
-
-  return filtered
+  return posts.value
 })
 
 // 固定的分类选项
@@ -334,17 +410,22 @@ const hongKongDistricts = [
   '离岛区'
 ]
 
-// 加载帖子数据
+// Load post data
 const loadPosts = async () => {
   loading.value = true
   try {
-    const response = await getAllPosts(authStore.token)
-    console.log('后端返回的帖子数据:', response)
+    // Use new API to get open posts based on current filter conditions
+    const type = activeTab.value === 'all' ? null : activeTab.value
+    const petType = selectedPetType.value === 'all' ? null : selectedPetType.value
+    const serviceType = selectedServiceType.value === 'all' ? null : selectedServiceType.value
+    const district = selectedDistrict.value === 'all' ? null : selectedDistrict.value
+    const response = await getOpenPosts(type, petType, serviceType, district, authStore.token)
+    console.log('Posts data returned from backend:', response)
 
     if (response.success) {
       posts.value = response.posts || []
-      console.log('设置的帖子数组:', posts.value)
-      console.log('帖子数量:', posts.value.length)
+      console.log('Posts array set:', posts.value)
+      console.log('Post count:', posts.value.length)
     } else {
       console.error('Failed to load posts:', response.message)
     }
@@ -355,12 +436,17 @@ const loadPosts = async () => {
   }
 }
 
-// 加载用户档案
+// 监听筛选器变化
+watch([activeTab, selectedPetType, selectedServiceType, selectedDistrict], () => {
+  loadPosts()
+})
+
+// Load user profiles
 const loadUserProfiles = async () => {
   try {
     const [petResponse, serviceResponse] = await Promise.all([
-      getUserPetProfiles(authStore.token),
-      getUserServiceProfiles(authStore.token)
+      getUserPetProfiles(authStore.token, authStore.user?.username),
+      getUserServiceProfiles(authStore.token, authStore.user?.username)
     ])
 
     if (petResponse.success) {
@@ -378,7 +464,7 @@ const loadUserProfiles = async () => {
 const handleCreatePost = async () => {
   submitting.value = true
   try {
-    // 确保username一定有值，从localStorage获取作为备用
+    // Ensure username has a value, get from localStorage as backup
     const currentUsername = authStore.user?.username || localStorage.getItem('current_username')
 
     const postData = {
@@ -392,13 +478,14 @@ const handleCreatePost = async () => {
       description: newPost.value.detail,
       petType: newPost.value.category,
       district: getDistrictValue(newPost.value.district),
-      contact: newPost.value.contact
+      contact: newPost.value.contact,
+      serviceTime: newPost.value.serviceTime ? new Date(newPost.value.serviceTime).toISOString() : null
     }
 
-    // 调试信息：检查发送的数据
-    console.log('发送到后端的帖子数据:', postData)
-    console.log('当前用户信息:', authStore.user)
-    console.log('用户名:', currentUsername)
+    // Debug: Check data being sent
+    console.log('Post data sent to backend:', postData)
+    console.log('Current user info:', authStore.user)
+    console.log('Username:', currentUsername)
     console.log('localStorage数据:', {
       username: localStorage.getItem('current_username'),
       district: localStorage.getItem('current_district'),
@@ -407,15 +494,15 @@ const handleCreatePost = async () => {
 
     // 验证必需字段
     if (!postData.username) {
-      alert('用户信息不完整，请重新登录')
+      alert('User information incomplete, please log in again')
       submitting.value = false
       return
     }
 
-    // 调试信息：检查发送的数据
-    console.log('发送到后端的帖子数据:', postData)
-    console.log('当前用户信息:', authStore.user)
-    console.log('用户名:', currentUsername)
+    // Debug: Check data being sent
+    console.log('Post data sent to backend:', postData)
+    console.log('Current user info:', authStore.user)
+    console.log('Username:', currentUsername)
 
     const response = await createPost(postData, authStore.token)
 
@@ -426,11 +513,11 @@ const handleCreatePost = async () => {
       resetNewPost()
       showCreatePostModal.value = false
     } else {
-      alert('发布失败：' + response.message)
+      alert('Post failed: ' + response.message)
     }
   } catch (error) {
     console.error('Error creating post:', error)
-    alert('发布失败，请检查网络连接')
+    alert('Post failed, please check network connection')
   } finally {
     submitting.value = false
   }
@@ -458,7 +545,7 @@ const onPostTypeChange = () => {
   }
 }
 
-// 处理宠物档案选择
+// Handle pet profile selection
 const onPetProfileChange = () => {
   if (selectedPetProfile.value) {
     newPost.value.title = `Looking for ${selectedPetProfile.value.petType} services - ${selectedPetProfile.value.petName}`
@@ -469,7 +556,7 @@ const onPetProfileChange = () => {
   }
 }
 
-// 处理服务档案选择
+// Handle service profile selection
 const onServiceProfileChange = () => {
   if (selectedServiceProfile.value) {
     newPost.value.title = `${selectedServiceProfile.value.serviceType} Services Available`
@@ -532,6 +619,19 @@ const formatTime = (timeString) => {
   })
 }
 
+// 格式化服务时间
+const formatServiceTime = (timeString) => {
+  if (!timeString) return ''
+  const date = new Date(timeString)
+  return date.toLocaleDateString('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+}
+
 // 获取宠物类型的显示标签
 const getCategoryLabel = (category) => {
   const categoryMap = {
@@ -540,6 +640,17 @@ const getCategoryLabel = (category) => {
     'other': '🐾 Other'
   }
   return categoryMap[category] || category || 'Uncategorized'
+}
+
+// 获取服务类型的显示标签
+const getServiceTypeLabel = (serviceType) => {
+  const serviceTypeMap = {
+    'grooming': 'Pet Grooming',
+    'walking': 'Pet Walking',
+    'feeding': 'Pet Feeding',
+    'other': 'Other Services'
+  }
+  return serviceTypeMap[serviceType] || serviceType || 'General Service'
 }
 
 // 地区中英文映射
@@ -564,13 +675,21 @@ const districtMapping = {
   '离岛区': 'Islands'
 }
 
-// 获取地区显示标签（中英文对照）
+// 获取地区显示标签（优先显示英文）
 const getDistrictLabel = (district) => {
-  // 如果是英文，显示为中文
+  // 如果是中文，显示对应的英文；如果已经是英文，直接显示
+  const chineseToEnglish = districtMapping
   const englishToChinese = Object.fromEntries(
     Object.entries(districtMapping).map(([chinese, english]) => [english, chinese])
   )
-  return districtMapping[district] || englishToChinese[district] || district || 'Unknown'
+
+  if (chineseToEnglish[district]) {
+    return chineseToEnglish[district] // 中文转英文
+  } else if (englishToChinese[district]) {
+    return district // 英文直接显示
+  } else {
+    return district || 'Unknown'
+  }
 }
 
 // 获取地区的英文值用于存储
@@ -707,56 +826,94 @@ onMounted(async () => {
 .filter-section {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
-  margin: 2rem 0;
-  padding: 1.5rem;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  padding: 1.2rem;
   background-color: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.filter-row {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+}
+
+.filter-group {
+  flex: 1;
+  min-width: 200px;
 }
 
 .filter-group h3 {
-  margin: 0 0 1rem 0;
+  margin: 0 0 0.6rem 0;
   color: #333;
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 600;
 }
 
 .post-tabs {
   display: flex;
-  gap: 1rem;
+  gap: 0.8rem;
   justify-content: center;
 }
 
 .pet-type-filters {
   display: flex;
-  gap: 1rem;
+  gap: 0.8rem;
   justify-content: center;
   flex-wrap: wrap;
 }
 
 .post-tabs button,
-.pet-type-filters button {
-  padding: 0.75rem 1.5rem;
+.pet-type-filters button,
+.service-type-filters button {
+  padding: 0.5rem 0.8rem;
   border: 1px solid #ddd;
   background-color: white;
-  border-radius: 8px;
+  border-radius: 4px;
   cursor: pointer;
   transition: all 0.3s;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
 }
 
 .post-tabs button:hover,
-.pet-type-filters button:hover {
+.pet-type-filters button:hover,
+.service-type-filters button:hover {
   border-color: #42b983;
   background-color: #f6ffed;
 }
 
 .post-tabs button.active,
-.pet-type-filters button.active {
+.pet-type-filters button.active,
+.service-type-filters button.active {
   background-color: #42b983;
   color: white;
   border-color: #42b983;
+}
+
+.service-type-filters {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.district-select {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: white;
+  font-size: 0.85rem;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.district-select:focus {
+  outline: none;
+  border-color: #42b983;
+  box-shadow: 0 0 0 2px rgba(66, 185, 131, 0.1);
 }
 
 .posts-container {
@@ -853,6 +1010,49 @@ onMounted(async () => {
   border-top: 1px solid #eee;
   font-size: 0.8rem;
   color: #666;
+}
+
+/* 宠物信息样式 */
+.pet-info {
+  display: flex;
+  gap: 1rem;
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+.pet-name, .pet-breed {
+  background-color: #f0f8ff;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  color: #333;
+}
+
+/* 服务信息样式 */
+.service-info {
+  display: flex;
+  gap: 1rem;
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+.service-type {
+  background-color: #e8f5e8;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  color: #2e7d32;
+}
+
+/* Service Time styles */
+.service-time {
+  background-color: #fff9e6;
+  padding: 0.5rem;
+  border-radius: 4px;
+  margin: 0.5rem 0;
+  font-size: 0.8rem;
+  color: #666;
+  border-left: 3px solid #ffc107;
 }
 
 /* 模态框样式 */

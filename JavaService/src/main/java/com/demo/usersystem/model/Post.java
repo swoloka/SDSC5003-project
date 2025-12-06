@@ -50,6 +50,13 @@ public class Post {
     @Column(name = "contact", length = 100)
     private String contact;
 
+    @Column(name = "service_time")
+    @JsonProperty("serviceTime")
+    private LocalDateTime serviceTime;
+
+    @Column(name = "status", length = 50)
+    private String status;
+
     @Column(name = "create_time", updatable = false)
     private LocalDateTime createTime;
 
@@ -63,7 +70,7 @@ public class Post {
 
     public Post(String username, String role, String title, String petName, String breed,
                 String serviceType, BigDecimal price, String description, String petType,
-                String district, String contact) {
+                String district, String contact, LocalDateTime serviceTime, String status) {
         this.username = username;
         this.role = role;
         this.title = title;
@@ -75,6 +82,8 @@ public class Post {
         this.petType = petType;
         this.district = district;
         this.contact = contact;
+        this.serviceTime = serviceTime;
+        this.status = status;
         this.createTime = LocalDateTime.now();
     }
 
@@ -82,6 +91,9 @@ public class Post {
     protected void onCreate() {
         if (createTime == null) {
             createTime = LocalDateTime.now();
+        }
+        if (status == null) {
+            status = "open";
         }
     }
 
@@ -185,6 +197,26 @@ public class Post {
 
     public void setContact(String contact) {
         this.contact = contact;
+    }
+
+    @JsonProperty("serviceTime")
+    public LocalDateTime getServiceTime() {
+        return serviceTime;
+    }
+
+    @JsonProperty("serviceTime")
+    public void setServiceTime(LocalDateTime serviceTime) {
+        this.serviceTime = serviceTime;
+    }
+
+    @JsonProperty("status")
+    public String getStatus() {
+        return status;
+    }
+
+    @JsonProperty("status")
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public LocalDateTime getCreateTime() {

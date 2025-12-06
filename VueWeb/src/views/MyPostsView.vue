@@ -31,7 +31,7 @@
           :class="{ active: activeTab === 'seeking' }"
           @click="activeTab = 'seeking'"
         >
-          Seeking Service
+          Looking for Service
         </button>
         <button
           :class="{ active: activeTab === 'offering' }"
@@ -49,13 +49,36 @@
         </div>
         <div v-else v-for="post in filteredPosts" :key="post.postId" class="post-card">
           <div class="post-header">
-            <span class="post-role" :class="post.role">
-              {{ post.role === 'seeking' ? '寻求服务' : '提供服务' }}
-            </span>
+            <div class="post-badges">
+              <span class="post-role" :class="post.role">
+                {{ post.role === 'seeking' ? 'Looking for Service' : 'Offering Service' }}
+              </span>
+              <span class="post-status" :class="post.status">
+                {{ post.status === 'open' ? 'Open' : 'Closed' }}
+              </span>
+            </div>
             <span class="post-time">{{ formatTime(post.createTime) }}</span>
           </div>
           <h3 class="post-title">{{ post.title }}</h3>
           <p class="post-detail">{{ post.description }}</p>
+
+          <!-- Pet Information -->
+          <div v-if="post.role === 'seeking' && (post.petName || post.breed)" class="pet-info">
+            <span v-if="post.petName" class="pet-name">🐾 Pet: {{ post.petName }}</span>
+            <span v-if="post.breed" class="pet-breed">Breed: {{ post.breed }}</span>
+            <span v-if="post.serviceType" class="service-type">⚙️ Service: {{ getServiceTypeLabel(post.serviceType) }}</span>
+          </div>
+
+          <!-- Service Type for offering posts only -->
+          <div v-else-if="post.role === 'offering' && post.serviceType" class="service-info">
+            <span class="service-type">⚙️ Service: {{ getServiceTypeLabel(post.serviceType) }}</span>
+          </div>
+
+          <!-- Service Time -->
+          <div v-if="post.serviceTime" class="service-time">
+            🕐 Service Time: {{ formatServiceTime(post.serviceTime) }}
+          </div>
+
           <div class="post-meta">
             <span class="post-category">{{ getCategoryLabel(post.petType) }}</span>
             <span class="post-price" v-if="post.price">
@@ -68,6 +91,9 @@
           </div>
           <div class="post-actions">
             <button @click="editPost(post)" class="edit-btn">Edit</button>
+            <button @click="togglePostStatus(post)" class="status-btn" :class="post.status === 'open' ? 'close-btn' : 'open-btn'">
+              {{ post.status === 'open' ? 'Close' : 'Open' }}
+            </button>
             <button @click="handleDeletePost(post.postId)" class="delete-btn">Delete</button>
           </div>
         </div>
@@ -82,7 +108,7 @@
           <div class="form-group">
             <label>Post Type</label>
             <select v-model="editForm.role" disabled>
-              <option value="seeking">Seeking Service</option>
+              <option value="seeking">Looking for Service</option>
               <option value="offering">Offering Service</option>
             </select>
           </div>
@@ -102,6 +128,16 @@
               <label>Breed</label>
               <input type="text" v-model="editForm.breed">
             </div>
+            <div class="form-group">
+              <label>Service Type</label>
+              <select v-model="editForm.serviceType">
+                <option value="">Please Select</option>
+                <option value="grooming">Pet Grooming</option>
+                <option value="walking">Pet Walking</option>
+                <option value="feeding">Pet Feeding</option>
+                <option value="other">Other Services</option>
+              </select>
+            </div>
           </template>
 
           <!-- 只在提供服务时显示服务类型 -->
@@ -111,10 +147,7 @@
               <option value="">Please Select</option>
               <option value="grooming">Pet Grooming</option>
               <option value="walking">Pet Walking</option>
-              <option value="sitting">Pet Sitting</option>
-              <option value="training">Pet Training</option>
-              <option value="boarding">Pet Boarding</option>
-              <option value="medical">Pet Medical Care</option>
+              <option value="feeding">Pet Feeding</option>
               <option value="other">Other Services</option>
             </select>
           </div>
@@ -144,7 +177,7 @@
             <select v-model="editForm.district" required>
               <option value="">Please Select District</option>
               <option v-for="district in hongKongDistricts" :key="district" :value="district">
-                {{ district }}
+                {{ getDistrictLabel(district) }}
               </option>
             </select>
           </div>
@@ -171,8 +204,9 @@ import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import {
-  getPostsByType,
+  getAllUserPosts,
   updatePost,
+  updatePostStatus,
   deletePost as deletePostApi
 } from '@/services/postService'
 
@@ -233,10 +267,10 @@ const filteredPosts = computed(() => {
 const loadPosts = async () => {
   loading.value = true
   try {
-    // 分别获取seeking和offering的帖子
+    // 获取用户的所有帖子（包括关闭状态）
     const [seekingResponse, offeringResponse] = await Promise.all([
-      getPostsByType('seeking', authStore.token),
-      getPostsByType('offering', authStore.token)
+      getAllUserPosts('seeking', authStore.token),
+      getAllUserPosts('offering', authStore.token)
     ])
 
     if (seekingResponse.success && offeringResponse.success) {
@@ -306,6 +340,27 @@ const handleUpdatePost = async () => {
   }
 }
 
+// 切换帖子状态
+const togglePostStatus = async (post) => {
+  const action = post.status === 'open' ? 'close' : 'open'
+  if (!confirm(`Are you sure you want to ${action} this post?`)) {
+    return
+  }
+
+  try {
+    const newStatus = post.status === 'open' ? 'close' : 'open'
+    const response = await updatePostStatus(post.postId, newStatus, authStore.token)
+    if (response.success) {
+      await loadPosts()
+    } else {
+      alert(`Failed to ${action} post: ` + response.message)
+    }
+  } catch (error) {
+    console.error(`Error ${action}ing post:`, error)
+    alert(`Failed to ${action} post. Please try again.`)
+  }
+}
+
 // 删除帖子
 const handleDeletePost = async (postId) => {
   if (!confirm('Are you sure you want to delete this post?')) {
@@ -355,6 +410,19 @@ const formatTime = (timeString) => {
   })
 }
 
+// 格式化服务时间
+const formatServiceTime = (timeString) => {
+  if (!timeString) return ''
+  const date = new Date(timeString)
+  return date.toLocaleDateString('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+}
+
 // 获取宠物类型的显示标签
 const getCategoryLabel = (category) => {
   const categoryMap = {
@@ -363,6 +431,17 @@ const getCategoryLabel = (category) => {
     'other': '🐾 Other'
   }
   return categoryMap[category] || category || 'Uncategorized'
+}
+
+// 获取服务类型的显示标签
+const getServiceTypeLabel = (serviceType) => {
+  const serviceTypeMap = {
+    'grooming': 'Pet Grooming',
+    'walking': 'Pet Walking',
+    'feeding': 'Pet Feeding',
+    'other': 'Other Services'
+  }
+  return serviceTypeMap[serviceType] || serviceType || 'General Service'
 }
 
 // 地区中英文映射
@@ -552,6 +631,31 @@ onMounted(() => {
   margin-bottom: 1rem;
 }
 
+.post-badges {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.post-status {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.post-status.open {
+  background-color: #f6ffed;
+  color: #52c41a;
+  border: 1px solid #b7eb8f;
+}
+
+.post-status.close {
+  background-color: #fff2f0;
+  color: #ff4d4f;
+  border: 1px solid #ffccc7;
+}
+
 .post-role {
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
@@ -620,7 +724,7 @@ onMounted(() => {
   justify-content: flex-end;
 }
 
-.edit-btn, .delete-btn {
+.edit-btn, .delete-btn, .status-btn {
   padding: 0.25rem 0.75rem;
   border: none;
   border-radius: 4px;
@@ -630,6 +734,21 @@ onMounted(() => {
 
 .edit-btn {
   background-color: #409eff;
+  color: white;
+}
+
+.status-btn {
+  background-color: #909399;
+  color: white;
+}
+
+.status-btn.open-btn {
+  background-color: #52c41a;
+  color: white;
+}
+
+.status-btn.close-btn {
+  background-color: #ff7875;
   color: white;
 }
 
@@ -721,5 +840,48 @@ onMounted(() => {
 .form-actions button[type="submit"]:disabled {
   background-color: #ccc;
   cursor: not-allowed;
+}
+
+/* 宠物信息样式 */
+.pet-info {
+  display: flex;
+  gap: 1rem;
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+.pet-name, .pet-breed {
+  background-color: #f0f8ff;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  color: #333;
+}
+
+/* 服务信息样式 */
+.service-info {
+  display: flex;
+  gap: 1rem;
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+.service-type {
+  background-color: #e8f5e8;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  color: #2e7d32;
+}
+
+/* Service Time styles */
+.service-time {
+  background-color: #fff9e6;
+  padding: 0.5rem;
+  border-radius: 4px;
+  margin: 0.5rem 0;
+  font-size: 0.8rem;
+  color: #666;
+  border-left: 3px solid #ffc107;
 }
 </style>

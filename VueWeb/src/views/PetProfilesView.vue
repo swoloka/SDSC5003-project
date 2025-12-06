@@ -112,7 +112,7 @@ const formData = ref({
 const loadProfiles = async () => {
   loading.value = true
   try {
-    const response = await getUserPetProfiles(authStore.token)
+    const response = await getUserPetProfiles(authStore.token, authStore.user?.username)
     if (response.success) {
       petProfiles.value = response.profiles || []
     }

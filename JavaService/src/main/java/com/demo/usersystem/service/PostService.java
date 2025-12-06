@@ -83,6 +83,8 @@ public class PostService {
                 post.setPetType(postDetails.getPetType());
                 post.setDistrict(postDetails.getDistrict());
                 post.setContact(postDetails.getContact());
+                post.setServiceTime(postDetails.getServiceTime());
+                post.setStatus(postDetails.getStatus());
                 return postRepository.save(post);
             });
     }
@@ -101,5 +103,41 @@ public class PostService {
 
     public long count() {
         return postRepository.count();
+    }
+
+    public List<Post> findByStatus(String status) {
+        return postRepository.findByStatus(status);
+    }
+
+    public List<Post> findByUsernameAndStatus(String username, String status) {
+        return postRepository.findByUsernameAndStatus(username, status);
+    }
+
+    public List<Post> findByRoleAndOpenStatus(String role) {
+        return postRepository.findByRoleAndOpenStatus(role);
+    }
+
+    public List<Post> findByPetTypeAndOpenStatus(String petType) {
+        return postRepository.findByPetTypeAndOpenStatus(petType);
+    }
+
+    public List<Post> findByRoleAndPetTypeAndOpenStatus(String role, String petType) {
+        return postRepository.findByRoleAndPetTypeAndOpenStatus(role, petType);
+    }
+
+    public List<Post> findByOpenStatus() {
+        return postRepository.findByOpenStatus();
+    }
+
+    public List<Post> findOpenPostsByFilters(String type, String petType, String serviceType, String district) {
+        return postRepository.findOpenPostsByFilters(type, petType, serviceType, district);
+    }
+
+    public Optional<Post> updateStatus(Integer id, String status) {
+        return postRepository.findById(id)
+            .map(post -> {
+                post.setStatus(status);
+                return postRepository.save(post);
+            });
     }
 }
