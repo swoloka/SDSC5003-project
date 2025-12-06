@@ -28,8 +28,12 @@ public class ServiceProfileService {
         return serviceProfileRepository.findByUsername(username);
     }
 
-    public List<ServiceProfile> findByCategory(String category) {
-        return serviceProfileRepository.findByCategory(category);
+    public List<ServiceProfile> findByPetType(String petType) {
+        return serviceProfileRepository.findByPetType(petType);
+    }
+
+    public List<ServiceProfile> findByServiceType(String serviceType) {
+        return serviceProfileRepository.findByServiceType(serviceType);
     }
 
     public List<ServiceProfile> findByKeyword(String keyword) {
@@ -43,7 +47,9 @@ public class ServiceProfileService {
     public Optional<ServiceProfile> update(Integer id, ServiceProfile serviceProfileDetails) {
         return serviceProfileRepository.findById(id)
             .map(serviceProfile -> {
-                serviceProfile.setCategory(serviceProfileDetails.getCategory());
+                serviceProfile.setPetType(serviceProfileDetails.getPetType());
+                serviceProfile.setServiceType(serviceProfileDetails.getServiceType());
+                serviceProfile.setPrice(serviceProfileDetails.getPrice());
                 serviceProfile.setDescription(serviceProfileDetails.getDescription());
                 return serviceProfileRepository.save(serviceProfile);
             });

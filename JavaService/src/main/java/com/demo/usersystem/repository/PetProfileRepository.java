@@ -14,11 +14,11 @@ public interface PetProfileRepository extends JpaRepository<PetProfile, Integer>
 
     List<PetProfile> findByUsername(String username);
 
-    List<PetProfile> findByCategory(String category);
+    List<PetProfile> findByPetType(String petType);
 
-    @Query("SELECT p FROM PetProfile p WHERE p.category LIKE %:keyword% OR p.habits LIKE %:keyword%")
+    @Query("SELECT p FROM PetProfile p WHERE p.petType LIKE %:keyword% OR p.petName LIKE %:keyword% OR p.breed LIKE %:keyword% OR p.description LIKE %:keyword%")
     List<PetProfile> findByKeyword(@Param("keyword") String keyword);
 
-    @Query("SELECT p FROM PetProfile p WHERE p.username = :username AND p.category = :category")
-    Optional<PetProfile> findByUsernameAndCategory(@Param("username") String username, @Param("category") String category);
+    @Query("SELECT p FROM PetProfile p WHERE p.username = :username AND p.petType = :petType")
+    Optional<PetProfile> findByUsernameAndPetType(@Param("username") String username, @Param("petType") String petType);
 }

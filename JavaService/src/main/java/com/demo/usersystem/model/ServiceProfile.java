@@ -2,6 +2,7 @@ package com.demo.usersystem.model;
 
 import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "service_profiles")
@@ -15,8 +16,14 @@ public class ServiceProfile {
     @Column(name = "username", length = 50, nullable = false)
     private String username;
 
-    @Column(name = "category", length = 50)
-    private String category;
+    @Column(name = "pet_type", length = 50)
+    private String petType;
+
+    @Column(name = "service_type", length = 50)
+    private String serviceType;
+
+    @Column(name = "price")
+    private Double price;
 
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
@@ -29,12 +36,15 @@ public class ServiceProfile {
     public ServiceProfile() {
     }
 
-    public ServiceProfile(String username, String category, String description) {
+    public ServiceProfile(String username, String petType, String serviceType, Double price, String description) {
         this.username = username;
-        this.category = category;
+        this.petType = petType;
+        this.serviceType = serviceType;
+        this.price = price;
         this.description = description;
     }
 
+    @JsonProperty("serviceId")
     public Integer getProfileId() {
         return profileId;
     }
@@ -47,16 +57,37 @@ public class ServiceProfile {
         return username;
     }
 
+    @JsonProperty("username")
     public void setUsername(String username) {
         this.username = username;
     }
 
-    public String getCategory() {
-        return category;
+    @JsonProperty("petType")
+    public String getPetType() {
+        return petType;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    @JsonProperty("petType")
+    public void setPetType(String petType) {
+        this.petType = petType;
+    }
+
+    @JsonProperty("serviceType")
+    public String getServiceType() {
+        return serviceType;
+    }
+
+    @JsonProperty("serviceType")
+    public void setServiceType(String serviceType) {
+        this.serviceType = serviceType;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
     }
 
     public String getDescription() {

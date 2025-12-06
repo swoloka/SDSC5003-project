@@ -38,9 +38,15 @@ public class ServiceProfileController {
         return ResponseEntity.ok(serviceProfiles);
     }
 
-    @GetMapping("/category/{category}")
-    public ResponseEntity<List<ServiceProfile>> getServiceProfilesByCategory(@PathVariable String category) {
-        List<ServiceProfile> serviceProfiles = serviceProfileService.findByCategory(category);
+    @GetMapping("/pet-type/{petType}")
+    public ResponseEntity<List<ServiceProfile>> getServiceProfilesByPetType(@PathVariable String petType) {
+        List<ServiceProfile> serviceProfiles = serviceProfileService.findByPetType(petType);
+        return ResponseEntity.ok(serviceProfiles);
+    }
+
+    @GetMapping("/service-type/{serviceType}")
+    public ResponseEntity<List<ServiceProfile>> getServiceProfilesByServiceType(@PathVariable String serviceType) {
+        List<ServiceProfile> serviceProfiles = serviceProfileService.findByServiceType(serviceType);
         return ResponseEntity.ok(serviceProfiles);
     }
 

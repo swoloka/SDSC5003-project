@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "posts")
@@ -23,20 +24,31 @@ public class Post {
     @Column(name = "title", length = 200, nullable = false)
     private String title;
 
-    @Column(name = "detail", columnDefinition = "TEXT")
-    private String detail;
+    @Column(name = "pet_name", length = 50)
+    @JsonProperty("petName")
+    private String petName;
 
-    @Column(name = "price", precision = 10, scale = 2)
+    @Column(name = "breed", length = 50)
+    private String breed;
+
+    @Column(name = "service_type", length = 50)
+    @JsonProperty("serviceType")
+    private String serviceType;
+
+    @Column(name = "price")
     private BigDecimal price;
 
-    @Column(name = "category_snapshot", length = 50)
-    private String categorySnapshot;
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
 
-    @Column(name = "district_snapshot", length = 100)
-    private String districtSnapshot;
+    @Column(name = "pet_type", length = 50)
+    private String petType;
 
-    @Column(name = "contact_snapshot", length = 100)
-    private String contactSnapshot;
+    @Column(name = "district", length = 100)
+    private String district;
+
+    @Column(name = "contact", length = 100)
+    private String contact;
 
     @Column(name = "create_time", updatable = false)
     private LocalDateTime createTime;
@@ -49,16 +61,20 @@ public class Post {
     public Post() {
     }
 
-    public Post(String username, String role, String title, String detail, BigDecimal price,
-                String categorySnapshot, String districtSnapshot, String contactSnapshot) {
+    public Post(String username, String role, String title, String petName, String breed,
+                String serviceType, BigDecimal price, String description, String petType,
+                String district, String contact) {
         this.username = username;
         this.role = role;
         this.title = title;
-        this.detail = detail;
+        this.petName = petName;
+        this.breed = breed;
+        this.serviceType = serviceType;
         this.price = price;
-        this.categorySnapshot = categorySnapshot;
-        this.districtSnapshot = districtSnapshot;
-        this.contactSnapshot = contactSnapshot;
+        this.description = description;
+        this.petType = petType;
+        this.district = district;
+        this.contact = contact;
         this.createTime = LocalDateTime.now();
     }
 
@@ -101,12 +117,32 @@ public class Post {
         this.title = title;
     }
 
-    public String getDetail() {
-        return detail;
+    @JsonProperty("petName")
+    public String getPetName() {
+        return petName;
     }
 
-    public void setDetail(String detail) {
-        this.detail = detail;
+    @JsonProperty("petName")
+    public void setPetName(String petName) {
+        this.petName = petName;
+    }
+
+    public String getBreed() {
+        return breed;
+    }
+
+    public void setBreed(String breed) {
+        this.breed = breed;
+    }
+
+    @JsonProperty("serviceType")
+    public String getServiceType() {
+        return serviceType;
+    }
+
+    @JsonProperty("serviceType")
+    public void setServiceType(String serviceType) {
+        this.serviceType = serviceType;
     }
 
     public BigDecimal getPrice() {
@@ -117,28 +153,38 @@ public class Post {
         this.price = price;
     }
 
-    public String getCategorySnapshot() {
-        return categorySnapshot;
+    public String getDescription() {
+        return description;
     }
 
-    public void setCategorySnapshot(String categorySnapshot) {
-        this.categorySnapshot = categorySnapshot;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public String getDistrictSnapshot() {
-        return districtSnapshot;
+    @JsonProperty("petType")
+    public String getPetType() {
+        return petType;
     }
 
-    public void setDistrictSnapshot(String districtSnapshot) {
-        this.districtSnapshot = districtSnapshot;
+    @JsonProperty("petType")
+    public void setPetType(String petType) {
+        this.petType = petType;
     }
 
-    public String getContactSnapshot() {
-        return contactSnapshot;
+    public String getDistrict() {
+        return district;
     }
 
-    public void setContactSnapshot(String contactSnapshot) {
-        this.contactSnapshot = contactSnapshot;
+    public void setDistrict(String district) {
+        this.district = district;
+    }
+
+    public String getContact() {
+        return contact;
+    }
+
+    public void setContact(String contact) {
+        this.contact = contact;
     }
 
     public LocalDateTime getCreateTime() {

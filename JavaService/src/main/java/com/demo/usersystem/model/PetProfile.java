@@ -1,5 +1,6 @@
 package com.demo.usersystem.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -15,11 +16,17 @@ public class PetProfile {
     @Column(name = "username", length = 50, nullable = false)
     private String username;
 
-    @Column(name = "category", length = 50)
-    private String category;
+    @Column(name = "pet_name", length = 100)
+    private String petName;
 
-    @Column(name = "habits", columnDefinition = "TEXT")
-    private String habits;
+    @Column(name = "pet_type", length = 50)
+    private String petType;
+
+    @Column(name = "breed", length = 50)
+    private String breed;
+
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "username", referencedColumnName = "username", insertable = false, updatable = false)
@@ -29,12 +36,15 @@ public class PetProfile {
     public PetProfile() {
     }
 
-    public PetProfile(String username, String category, String habits) {
+    public PetProfile(String username, String petName, String petType, String breed, String description) {
         this.username = username;
-        this.category = category;
-        this.habits = habits;
+        this.petName = petName;
+        this.petType = petType;
+        this.breed = breed;
+        this.description = description;
     }
 
+    @JsonProperty("petId")
     public Integer getProfileId() {
         return profileId;
     }
@@ -47,24 +57,45 @@ public class PetProfile {
         return username;
     }
 
+    @JsonProperty("username")
     public void setUsername(String username) {
         this.username = username;
     }
 
-    public String getCategory() {
-        return category;
+    @JsonProperty("petName")
+    public String getPetName() {
+        return petName;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    @JsonProperty("petName")
+    public void setPetName(String petName) {
+        this.petName = petName;
     }
 
-    public String getHabits() {
-        return habits;
+    @JsonProperty("petType")
+    public String getPetType() {
+        return petType;
     }
 
-    public void setHabits(String habits) {
-        this.habits = habits;
+    @JsonProperty("petType")
+    public void setPetType(String petType) {
+        this.petType = petType;
+    }
+
+    public String getBreed() {
+        return breed;
+    }
+
+    public void setBreed(String breed) {
+        this.breed = breed;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public User getUser() {

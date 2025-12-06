@@ -28,8 +28,8 @@ public class PetProfileService {
         return petProfileRepository.findByUsername(username);
     }
 
-    public List<PetProfile> findByCategory(String category) {
-        return petProfileRepository.findByCategory(category);
+    public List<PetProfile> findByPetType(String petType) {
+        return petProfileRepository.findByPetType(petType);
     }
 
     public List<PetProfile> findByKeyword(String keyword) {
@@ -43,8 +43,10 @@ public class PetProfileService {
     public Optional<PetProfile> update(Integer id, PetProfile petProfileDetails) {
         return petProfileRepository.findById(id)
             .map(petProfile -> {
-                petProfile.setCategory(petProfileDetails.getCategory());
-                petProfile.setHabits(petProfileDetails.getHabits());
+                petProfile.setPetName(petProfileDetails.getPetName());
+                petProfile.setPetType(petProfileDetails.getPetType());
+                petProfile.setBreed(petProfileDetails.getBreed());
+                petProfile.setDescription(petProfileDetails.getDescription());
                 return petProfileRepository.save(petProfile);
             });
     }

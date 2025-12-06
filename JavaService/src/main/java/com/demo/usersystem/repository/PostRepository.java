@@ -17,11 +17,13 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
     List<Post> findByRole(String role);
 
-    List<Post> findByCategorySnapshot(String category);
+    List<Post> findByPetType(String petType);
 
-    List<Post> findByDistrictSnapshot(String district);
+    List<Post> findByServiceType(String serviceType);
 
-    @Query("SELECT p FROM Post p WHERE p.title LIKE %:keyword% OR p.detail LIKE %:keyword%")
+    List<Post> findByDistrict(String district);
+
+    @Query("SELECT p FROM Post p WHERE p.title LIKE %:keyword% OR p.petName LIKE %:keyword% OR p.breed LIKE %:keyword% OR p.serviceType LIKE %:keyword% OR p.description LIKE %:keyword%")
     List<Post> findByKeyword(@Param("keyword") String keyword);
 
     @Query("SELECT p FROM Post p WHERE p.price BETWEEN :minPrice AND :maxPrice")

@@ -53,9 +53,15 @@ public class PostController {
         return ResponseEntity.ok(posts);
     }
 
-    @GetMapping("/category/{category}")
-    public ResponseEntity<List<Post>> getPostsByCategory(@PathVariable String category) {
-        List<Post> posts = postService.findByCategory(category);
+    @GetMapping("/pet-type/{petType}")
+    public ResponseEntity<List<Post>> getPostsByPetType(@PathVariable String petType) {
+        List<Post> posts = postService.findByPetType(petType);
+        return ResponseEntity.ok(posts);
+    }
+
+    @GetMapping("/service-type/{serviceType}")
+    public ResponseEntity<List<Post>> getPostsByServiceType(@PathVariable String serviceType) {
+        List<Post> posts = postService.findByServiceType(serviceType);
         return ResponseEntity.ok(posts);
     }
 

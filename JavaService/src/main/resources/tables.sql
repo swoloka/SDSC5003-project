@@ -13,8 +13,10 @@ CREATE TABLE users (
 CREATE TABLE pet_profiles (
                               profile_id INT AUTO_INCREMENT NOT NULL COMMENT '档案ID (主键)',
                               username VARCHAR(50) NOT NULL COMMENT '外键: 关联用户',
-                              category VARCHAR(50) COMMENT '分类 (如: 猫、狗)',
-                              habits TEXT COMMENT '习性',
+                              pet_name VARCHAR(50) NOT NULL COMMENT '名字',
+                              pet_type VARCHAR(50) COMMENT '宠物类型 (如: 猫、狗)',
+                              breed VARCHAR(50) COMMENT '品种',
+                              description TEXT COMMENT '描述',
                               PRIMARY KEY (profile_id),
                               CONSTRAINT fk_pet_user FOREIGN KEY (username) REFERENCES users(username)
                                   ON DELETE CASCADE ON UPDATE CASCADE
@@ -25,7 +27,9 @@ CREATE TABLE pet_profiles (
 CREATE TABLE service_profiles (
                                   profile_id INT AUTO_INCREMENT NOT NULL COMMENT '档案ID (主键)',
                                   username VARCHAR(50) NOT NULL COMMENT '外键: 关联用户',
-                                  category VARCHAR(50) COMMENT '服务分类',
+                                  pet_type VARCHAR(50) COMMENT '宠物类型 (如: 猫、狗)',
+                                  service_type VARCHAR(50) COMMENT '服务类型',
+                                  price DECIMAL(10, 2) COMMENT '价格',
                                   description TEXT COMMENT '描述',
                                   PRIMARY KEY (profile_id),
                                   CONSTRAINT fk_service_user FOREIGN KEY (username) REFERENCES users(username)
@@ -39,13 +43,18 @@ CREATE TABLE posts (
                        username VARCHAR(50) NOT NULL COMMENT '外键: 发布者',
                        role VARCHAR(50) COMMENT '角色',
                        title VARCHAR(200) NOT NULL COMMENT '标题',
-                       detail TEXT COMMENT '详情',
-                       price DECIMAL(10, 2) COMMENT '价格',
 
-    -- 快照字段
-                       category_snapshot VARCHAR(50) COMMENT '分类_快照',
-                       district_snapshot VARCHAR(100) COMMENT '地区_快照',
-                       contact_snapshot VARCHAR(100) COMMENT '联系方式_快照',
+                       pet_name VARCHAR(50) COMMENT '名字',
+                       breed VARCHAR(50) COMMENT '品种',
+
+                       service_type VARCHAR(50) COMMENT '服务类型',
+
+                       price DECIMAL(10, 2) COMMENT '价格',
+                       description TEXT COMMENT '描述',
+                       pet_type VARCHAR(50) COMMENT '宠物类型 (如: 猫、狗)',
+
+                       district VARCHAR(100) COMMENT '地区',
+                       contact VARCHAR(100) COMMENT '联系方式',
 
                        create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '发布时间',
                        PRIMARY KEY (post_id),

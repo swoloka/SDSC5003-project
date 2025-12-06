@@ -38,9 +38,9 @@ public class PetProfileController {
         return ResponseEntity.ok(petProfiles);
     }
 
-    @GetMapping("/category/{category}")
-    public ResponseEntity<List<PetProfile>> getPetProfilesByCategory(@PathVariable String category) {
-        List<PetProfile> petProfiles = petProfileService.findByCategory(category);
+    @GetMapping("/type/{petType}")
+    public ResponseEntity<List<PetProfile>> getPetProfilesByPetType(@PathVariable String petType) {
+        List<PetProfile> petProfiles = petProfileService.findByPetType(petType);
         return ResponseEntity.ok(petProfiles);
     }
 

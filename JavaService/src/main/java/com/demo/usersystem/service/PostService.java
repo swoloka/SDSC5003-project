@@ -34,12 +34,16 @@ public class PostService {
         return postRepository.findByRole(role);
     }
 
-    public List<Post> findByCategory(String category) {
-        return postRepository.findByCategorySnapshot(category);
+    public List<Post> findByPetType(String petType) {
+        return postRepository.findByPetType(petType);
+    }
+
+    public List<Post> findByServiceType(String serviceType) {
+        return postRepository.findByServiceType(serviceType);
     }
 
     public List<Post> findByDistrict(String district) {
-        return postRepository.findByDistrictSnapshot(district);
+        return postRepository.findByDistrict(district);
     }
 
     public List<Post> findByKeyword(String keyword) {
@@ -71,11 +75,14 @@ public class PostService {
             .map(post -> {
                 post.setRole(postDetails.getRole());
                 post.setTitle(postDetails.getTitle());
-                post.setDetail(postDetails.getDetail());
+                post.setPetName(postDetails.getPetName());
+                post.setBreed(postDetails.getBreed());
+                post.setServiceType(postDetails.getServiceType());
                 post.setPrice(postDetails.getPrice());
-                post.setCategorySnapshot(postDetails.getCategorySnapshot());
-                post.setDistrictSnapshot(postDetails.getDistrictSnapshot());
-                post.setContactSnapshot(postDetails.getContactSnapshot());
+                post.setDescription(postDetails.getDescription());
+                post.setPetType(postDetails.getPetType());
+                post.setDistrict(postDetails.getDistrict());
+                post.setContact(postDetails.getContact());
                 return postRepository.save(post);
             });
     }
