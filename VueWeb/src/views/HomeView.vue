@@ -6,7 +6,7 @@
         <h1 class="logo">Pet Service Platform</h1>
         <div class="user-info">
           <span>Welcome, {{ authStore.user?.username }}</span>
-          <span class="district" v-if="authStore.user?.district">District: {{ getDistrictLabel(authStore.user?.district) }}</span>
+          <span class="district" v-if="authStore.user?.district">District: {{ authStore.user?.district }}</span>
           <button @click="handleLogout" class="logout-btn">Logout</button>
         </div>
       </div>
@@ -135,8 +135,8 @@
             <h3>District</h3>
             <select v-model="selectedDistrict" class="district-select">
               <option value="all">All Districts</option>
-              <option v-for="district in hongKongDistricts" :key="district" :value="getDistrictValue(district)">
-                {{ getDistrictLabel(district) }}
+              <option v-for="district in hongKongDistricts" :key="district" :value="district">
+                {{ district }}
               </option>
             </select>
           </div>
@@ -186,7 +186,7 @@
               </span>
             </div>
             <div class="post-footer">
-              <span class="post-district">District: {{ getDistrictLabel(post.district) }}</span>
+              <span class="post-district">District: {{ post.district }}</span>
               <span class="post-contact">Contact: {{ post.contact }}</span>
             </div>
           </div>
@@ -210,7 +210,7 @@
 
           <!-- Profile Selection Section -->
           <div v-if="newPost.role === 'seeking' && petProfiles.length > 0" class="form-group">
-            <label>Select Pet Profile (Optional)</label>
+            <label>Select Pet Profile</label>
             <select v-model="selectedPetProfile" @change="onPetProfileChange">
               <option value="">Create custom post</option>
               <option v-for="profile in petProfiles" :key="profile.petId" :value="profile">
@@ -220,7 +220,7 @@
           </div>
 
           <div v-if="newPost.role === 'offering' && serviceProfiles.length > 0" class="form-group">
-            <label>Select Service Profile (Optional)</label>
+            <label>Select Service Profile</label>
             <select v-model="selectedServiceProfile" @change="onServiceProfileChange">
               <option value="">Create custom post</option>
               <option v-for="profile in serviceProfiles" :key="profile.serviceId" :value="profile">
@@ -237,11 +237,11 @@
           <!-- Pet-related fields only shown for service seeking posts -->
           <template v-if="newPost.role === 'seeking'">
             <div class="form-group">
-              <label>Pet Name (Optional)</label>
+              <label>Pet Name</label>
               <input type="text" v-model="newPost.petName" placeholder="Enter pet name">
             </div>
             <div class="form-group">
-              <label>Breed (Optional)</label>
+              <label>Breed</label>
               <input type="text" v-model="newPost.breed" placeholder="Enter breed">
             </div>
           </template>
@@ -262,7 +262,7 @@
             <textarea v-model="newPost.detail" rows="4" required></textarea>
           </div>
           <div class="form-group">
-            <label>Price (Optional)</label>
+            <label>Price</label>
             <input type="number" v-model="newPost.price" step="0.01">
           </div>
 
@@ -304,7 +304,7 @@
             <select v-model="newPost.district" required>
               <option value="">Please Select District</option>
               <option v-for="district in hongKongDistricts" :key="district" :value="district">
-                {{ getDistrictLabel(district) }}
+                {{ district }}
               </option>
             </select>
           </div>
@@ -390,24 +390,24 @@ const petCategories = [
 
 // 香港18个区
 const hongKongDistricts = [
-  '中西区',
-  '湾仔区',
-  '东区',
-  '南区',
-  '油尖旺区',
-  '深水埗区',
-  '九龙城区',
-  '黄大仙区',
-  '观塘区',
-  '荃湾区',
-  '屯门区',
-  '元朗区',
-  '北区',
-  '大埔区',
-  '西贡区',
-  '沙田区',
-  '葵青区',
-  '离岛区'
+  'Central and Western',
+  'Wan Chai',
+  'Eastern',
+  'Southern',
+  'Yau Tsim Mong',
+  'Sham Shui Po',
+  'Kowloon City',
+  'Wong Tai Sin',
+  'Kwun Tong',
+  'Tsuen Wan',
+  'Tuen Mun',
+  'Yuen Long',
+  'North',
+  'Tai Po',
+  'Sai Kung',
+  'Sha Tin',
+  'Kwai Tsing',
+  'Islands'
 ]
 
 // Load post data
@@ -477,7 +477,7 @@ const handleCreatePost = async () => {
       price: newPost.value.price ? parseFloat(newPost.value.price) : null,
       description: newPost.value.detail,
       petType: newPost.value.category,
-      district: getDistrictValue(newPost.value.district),
+      district: newPost.value.district,
       contact: newPost.value.contact,
       serviceTime: newPost.value.serviceTime ? new Date(newPost.value.serviceTime).toISOString() : null
     }
@@ -553,6 +553,8 @@ const onPetProfileChange = () => {
     newPost.value.petName = selectedPetProfile.value.petName
     newPost.value.breed = selectedPetProfile.value.breed || ''
     newPost.value.category = selectedPetProfile.value.petType
+    // 设置district（如果有）
+    newPost.value.district = selectedPetProfile.value.district || ''
   }
 }
 
@@ -564,6 +566,8 @@ const onServiceProfileChange = () => {
     // 设置服务类型，但允许用户修改pet_type
     newPost.value.serviceType = selectedServiceProfile.value.serviceType
     newPost.value.price = selectedServiceProfile.value.price
+    // 设置district
+    newPost.value.district = selectedServiceProfile.value.district
     // 如果当前category为空，则建议使用service profile的petType
     if (!newPost.value.category && selectedServiceProfile.value.petType) {
       newPost.value.category = selectedServiceProfile.value.petType
@@ -572,6 +576,7 @@ const onServiceProfileChange = () => {
     // 如果没有选择服务档案，只清空服务相关字段，保留用户选择的pet_type
     newPost.value.serviceType = ''
     newPost.value.price = ''
+    newPost.value.district = ''
   }
 }
 
@@ -653,49 +658,6 @@ const getServiceTypeLabel = (serviceType) => {
   return serviceTypeMap[serviceType] || serviceType || 'General Service'
 }
 
-// 地区中英文映射
-const districtMapping = {
-  '中西区': 'Central and Western',
-  '湾仔区': 'Wan Chai',
-  '东区': 'Eastern',
-  '南区': 'Southern',
-  '油尖旺区': 'Yau Tsim Mong',
-  '深水埗区': 'Sham Shui Po',
-  '九龙城区': 'Kowloon City',
-  '黄大仙区': 'Wong Tai Sin',
-  '观塘区': 'Kwun Tong',
-  '荃湾区': 'Tsuen Wan',
-  '屯门区': 'Tuen Mun',
-  '元朗区': 'Yuen Long',
-  '北区': 'North',
-  '大埔区': 'Tai Po',
-  '西贡区': 'Sai Kung',
-  '沙田区': 'Sha Tin',
-  '葵青区': 'Kwai Tsing',
-  '离岛区': 'Islands'
-}
-
-// 获取地区显示标签（优先显示英文）
-const getDistrictLabel = (district) => {
-  // 如果是中文，显示对应的英文；如果已经是英文，直接显示
-  const chineseToEnglish = districtMapping
-  const englishToChinese = Object.fromEntries(
-    Object.entries(districtMapping).map(([chinese, english]) => [english, chinese])
-  )
-
-  if (chineseToEnglish[district]) {
-    return chineseToEnglish[district] // 中文转英文
-  } else if (englishToChinese[district]) {
-    return district // 英文直接显示
-  } else {
-    return district || 'Unknown'
-  }
-}
-
-// 获取地区的英文值用于存储
-const getDistrictValue = (chineseDistrict) => {
-  return districtMapping[chineseDistrict] || chineseDistrict
-}
 
 // 退出登录
 const handleLogout = () => {

@@ -24,10 +24,10 @@ public class AuthController {
         Optional<String> tokenOptional = authService.login(loginRequest.username(), loginRequest.password());
 
         if (tokenOptional.isPresent()) {
-            return ResponseEntity.ok(new LoginResponse(true, "登录成功", tokenOptional.get()));
+            return ResponseEntity.ok(new LoginResponse(true, "Login successful", tokenOptional.get()));
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(new LoginResponse(false, "用户名或密码无效", null));
+                .body(new LoginResponse(false, "Invalid username or password", null));
         }
     }
 }

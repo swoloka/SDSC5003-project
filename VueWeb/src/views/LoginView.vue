@@ -55,7 +55,7 @@
           <select id="reg-district" v-model="regForm.district" required>
             <option value="">Please Select District</option>
             <option v-for="district in hongKongDistricts" :key="district" :value="district">
-              {{ getDistrictLabel(district) }}
+              {{ district }}
             </option>
           </select>
         </div>
@@ -92,52 +92,26 @@ const regForm = ref({
 
 // 香港18个区
 const hongKongDistricts = [
-  '中西区',
-  '湾仔区',
-  '东区',
-  '南区',
-  '油尖旺区',
-  '深水埗区',
-  '九龙城区',
-  '黄大仙区',
-  '观塘区',
-  '荃湾区',
-  '屯门区',
-  '元朗区',
-  '北区',
-  '大埔区',
-  '西贡区',
-  '沙田区',
-  '葵青区',
-  '离岛区'
+  'Central and Western',
+  'Wan Chai',
+  'Eastern',
+  'Southern',
+  'Yau Tsim Mong',
+  'Sham Shui Po',
+  'Kowloon City',
+  'Wong Tai Sin',
+  'Kwun Tong',
+  'Tsuen Wan',
+  'Tuen Mun',
+  'Yuen Long',
+  'North',
+  'Tai Po',
+  'Sai Kung',
+  'Sha Tin',
+  'Kwai Tsing',
+  'Islands'
 ]
 
-// 地区中英文映射
-const districtMapping = {
-  '中西区': 'Central and Western',
-  '湾仔区': 'Wan Chai',
-  '东区': 'Eastern',
-  '南区': 'Southern',
-  '油尖旺区': 'Yau Tsim Mong',
-  '深水埗区': 'Sham Shui Po',
-  '九龙城区': 'Kowloon City',
-  '黄大仙区': 'Wong Tai Sin',
-  '观塘区': 'Kwun Tong',
-  '荃湾区': 'Tsuen Wan',
-  '屯门区': 'Tuen Mun',
-  '元朗区': 'Yuen Long',
-  '北区': 'North',
-  '大埔区': 'Tai Po',
-  '西贡区': 'Sai Kung',
-  '沙田区': 'Sha Tin',
-  '葵青区': 'Kwai Tsing',
-  '离岛区': 'Islands'
-}
-
-// 获取地区的英文显示标签
-const getDistrictLabel = (chineseDistrict) => {
-  return districtMapping[chineseDistrict] || chineseDistrict
-}
 
 const router = useRouter()
 const authStore = useAuthStore()

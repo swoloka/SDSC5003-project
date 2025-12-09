@@ -29,18 +29,18 @@ export async function register(userData) {
   if (response.status === 201) {
     return {
       success: true,
-      message: '注册成功',
+      message: 'Registration successful',
       user: result
     }
   } else if (response.status === 409) {
     return {
       success: false,
-      message: '用户名已存在'
+      message: 'Username already exists'
     }
   } else {
     return {
       success: false,
-      message: '注册失败，请重试'
+      message: 'Registration failed, please try again'
     }
   }
 }
@@ -50,7 +50,7 @@ export async function getUserInfo(token, username) {
   if (!username) {
     return {
       success: false,
-      message: '用户名不能为空'
+      message: 'Username cannot be empty'
     }
   }
 
@@ -73,12 +73,12 @@ export async function getUserInfo(token, username) {
   } else if (response.status === 404) {
     return {
       success: false,
-      message: '用户不存在'
+      message: 'User does not exist'
     }
   } else {
     return {
       success: false,
-      message: '获取用户信息失败'
+      message: 'Failed to get user information'
     }
   }
 }
